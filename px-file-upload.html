@@ -325,7 +325,7 @@ Custom property | Description
      * @param event
      */
     _removeFile: function(e) {
-      var target = Polymer.dom(e).event.currentTarget.id.substring(4);
+      var target = Polymer.dom(e).localTarget.id.substring(4);
       if(!this.disabled) {
         this.splice("files",target,1);
         if(this.multiple && this.files.length === 0){
