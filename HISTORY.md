@@ -1,3 +1,7 @@
+v1.2.4
+==================
+* fix removeFile event targeting (#20)
+
 v1.2.3
 ==================
 * reduce icon-set imports, fix travis
