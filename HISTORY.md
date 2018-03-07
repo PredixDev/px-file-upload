@@ -1,3 +1,7 @@
+v1.2.6
+==================
+* update docs
+
 v1.2.5
 ==================
 * fix removeFile event targeting (#20)

@@ -1,6 +1,6 @@
 {
   "name": "px-file-upload",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "main": [
     "px-file-upload.html"
   ],
