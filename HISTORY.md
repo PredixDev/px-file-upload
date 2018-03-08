@@ -1,6 +1,7 @@
 v1.3.0
 ==================
 * files changed event now contains list of selected files
+* files property now notifies
 
 v1.2.6
 ==================

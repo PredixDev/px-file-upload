@@ -120,7 +120,8 @@ Custom property | Description
        */
       files: {
         type: Array,
-        value: function() {return [];}
+        value: function() {return [];},
+        notify: true
       },
       /**
        * Flag that disables the file upload field and prevents drag-and-drop or changing of selected files.
@@ -238,7 +239,7 @@ Custom property | Description
      * @param event
      */
     _fileChange: function(e) {
-      this.files = this._toArray(e.target.files);
+      this.set('files', this._toArray(e.target.files))
 
       // Single file mode
       if(!this.multiple) {
@@ -248,7 +249,7 @@ Custom property | Description
           this.toggleClass('hidden',false,this.$$('#validation'));
           this.toggleClass('hidden',true,this.$$('#fileList'));
           this.$.fileInput.value = "";
-          this.files = [];
+          this.set('files', []);
           this._notifyFilesChanged();
           return;
         }
@@ -259,7 +260,7 @@ Custom property | Description
             this.toggleClass('hidden',false,this.$$('#validation'));
             this.toggleClass('hidden',true,this.$$('#fileList'));
             this.$.fileInput.value = "";
-            this.files = [];
+            this.set('files', []);
             this._notifyFilesChanged();
             return;
           }
@@ -277,7 +278,7 @@ Custom property | Description
               this.toggleClass('hidden',true,this.$$('#fileList'));
               this.toggleClass('hidden',true,this.$$('#fileTable'));
               this.$.fileInput.value = "";
-              this.files = [];
+              this.set('files', []);
               this._notifyFilesChanged();
               return;
             }
