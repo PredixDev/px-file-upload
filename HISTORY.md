@@ -1,3 +1,7 @@
+v1.3.0
+==================
+* files changed event now contains list of selected files
+
 v1.2.6
 ==================
 * update docs

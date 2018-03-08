@@ -439,11 +439,12 @@ Custom property | Description
      */
      /**
       * Event fired when selected file(s) are changed.
+      * Event.detail will contain the array of files currently selected.
       *
       * @event px-file-upload-files-changed
       */
     _notifyFilesChanged: function() {
-      this.fire('px-file-upload-files-changed');
+      this.fire('px-file-upload-files-changed', this.files);
     }
 
   });
