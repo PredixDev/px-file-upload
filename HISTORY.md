@@ -1,3 +1,7 @@
+v1.3.1
+==================
+*  removed _notifyFilesChanged method call from clear method
+
 v1.3.0
 ==================
 * files changed event now contains list of selected files
