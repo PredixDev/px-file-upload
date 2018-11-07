@@ -227,6 +227,11 @@ Custom property | Description
           e.stopPropagation();
           this.toggleClass("hover",false,dropZone);
           this.$.fileInput.files = e.dataTransfer.files;
+
+          // Firefox does not properly fire a change event when manually setting files on a file input.
+          // Manually calling change handler.  Duplicate calls (i.e. this one and the change event)
+          // in not-Firefox are filtered out by a 0ms debounce.
+          this._fileChange({target: this.$.fileInput});
         }
       }
     },
@@ -255,24 +260,14 @@ Custom property | Description
      * @param event
      */
     _fileChange: function(e) {
-      this.set('files', this._toArray(e.target.files))
+      this.debounce('px-file-upload-file-changed-debounce', function() {
+        this.set('files', this._toArray(e.target.files))
 
-      // Single file mode
-      if(!this.multiple) {
-        // Multiple files dropped, only one allowed
-        if(e.target.files.length > 1){
-          this.$$('#validation').innerHTML = this.localize("Only one file is allowed.");
-          this.toggleClass('hidden',false,this.$$('#validation'));
-          this.toggleClass('hidden',true,this.$$('#fileList'));
-          this.$.fileInput.value = "";
-          this.set('files', []);
-          this._notifyFilesChanged();
-          return;
-        }
-        if(this.accept !== "") {
-          // Invalid file type was dropped
-          if(!this._isValid(e.target.files[0])) {
-            this.$$('#validation').innerHTML = this.localize("Invalid file type.");
+        // Single file mode
+        if(!this.multiple) {
+          // Multiple files dropped, only one allowed
+          if(e.target.files.length > 1){
+            this.$$('#validation').innerHTML = this.localize("Only one file is allowed.");
             this.toggleClass('hidden',false,this.$$('#validation'));
             this.toggleClass('hidden',true,this.$$('#fileList'));
             this.$.fileInput.value = "";
@@ -280,19 +275,12 @@ Custom property | Description
             this._notifyFilesChanged();
             return;
           }
-        }
-      }
-      // Multiple file mode
-      else {
-        if(this.accept !== "") {
-          // Check each file against accepted file types
-          for(i = 0; i < e.target.files.length; i++) {
-            var file = e.target.files[i];
-            if(!this._isValid(file)) {
+          if(this.accept !== "") {
+            // Invalid file type was dropped
+            if(!this._isValid(e.target.files[0])) {
               this.$$('#validation').innerHTML = this.localize("Invalid file type.");
               this.toggleClass('hidden',false,this.$$('#validation'));
               this.toggleClass('hidden',true,this.$$('#fileList'));
-              this.toggleClass('hidden',true,this.$$('#fileTable'));
               this.$.fileInput.value = "";
               this.set('files', []);
               this._notifyFilesChanged();
@@ -300,35 +288,54 @@ Custom property | Description
             }
           }
         }
-      }
-
-      // Either accepted file types not specified or all checks above passed
-      this.$$('#validation').innerHTML = "";
-      this.toggleClass('hidden',true,this.$$('#validation'));
-
-      if (this.files.length === 0) {
-        this.$$('#fileList').innerHTML = this.localize('No file selected');
-        if(this.multiple) {
-          this.toggleClass('hidden',true,this.$$('#fileTable'));
+        // Multiple file mode
+        else {
+          if(this.accept !== "") {
+            // Check each file against accepted file types
+            for(i = 0; i < e.target.files.length; i++) {
+              var file = e.target.files[i];
+              if(!this._isValid(file)) {
+                this.$$('#validation').innerHTML = this.localize("Invalid file type.");
+                this.toggleClass('hidden',false,this.$$('#validation'));
+                this.toggleClass('hidden',true,this.$$('#fileList'));
+                this.toggleClass('hidden',true,this.$$('#fileTable'));
+                this.$.fileInput.value = "";
+                this.set('files', []);
+                this._notifyFilesChanged();
+                return;
+              }
+            }
+          }
         }
-        this.toggleClass('hidden',false,this.$$('#fileList'));
-      }
-      else {
-        if(!this.multiple) {
-          var filesize = this._readableFileSize(this.files[0].size);
-          this.$$('#fileList').innerHTML = this.files[0].name + ' (' + filesize + ')';
+
+        // Either accepted file types not specified or all checks above passed
+        this.$$('#validation').innerHTML = "";
+        this.toggleClass('hidden',true,this.$$('#validation'));
+
+        if (this.files.length === 0) {
+          this.$$('#fileList').innerHTML = this.localize('No file selected');
+          if(this.multiple) {
+            this.toggleClass('hidden',true,this.$$('#fileTable'));
+          }
           this.toggleClass('hidden',false,this.$$('#fileList'));
-          this.toggleClass('hidden',false,this.$$('#fileClear'));
         }
         else {
-          this.toggleClass('hidden',false,this.$$('#fileTable'));
-          this.toggleClass('hidden',true,this.$$('#fileList'));
-          this.toggleClass('hidden',true,this.$$('#fileClear'));
+          if(!this.multiple) {
+            var filesize = this._readableFileSize(this.files[0].size);
+            this.$$('#fileList').innerHTML = this.files[0].name + ' (' + filesize + ')';
+            this.toggleClass('hidden',false,this.$$('#fileList'));
+            this.toggleClass('hidden',false,this.$$('#fileClear'));
+          }
+          else {
+            this.toggleClass('hidden',false,this.$$('#fileTable'));
+            this.toggleClass('hidden',true,this.$$('#fileList'));
+            this.toggleClass('hidden',true,this.$$('#fileClear'));
+          }
         }
-      }
 
-      this.toggleClass('hidden',true,this.$$('#validation'));
-      this._notifyFilesChanged();
+        this.toggleClass('hidden',true,this.$$('#validation'));
+        this._notifyFilesChanged();
+      }, 0);
     },
 
     /**

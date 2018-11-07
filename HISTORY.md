@@ -1,3 +1,7 @@
+v1.4.0
+==================
+* fixed drop behavior in firefox
+
 v1.3.0
 ==================
 * files changed event now contains list of selected files
