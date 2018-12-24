@@ -262,6 +262,10 @@ Custom property | Description
     _fileChange: function(e) {
       this.debounce('px-file-upload-file-changed-debounce', function() {
         this.set('files', this._toArray(e.target.files))
+                    
+        if (e.target.files[0] === null || e.target.files[0] === undefined) {
+           return;
+        }
 
         // Single file mode
         if(!this.multiple) {
