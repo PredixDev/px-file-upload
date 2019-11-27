@@ -19,28 +19,54 @@ limitations under the License.
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
-    <link rel="import" href="../px-file-upload.html" />
-    <link rel="import" href="../../px-theme/px-theme-styles.html">
-    <script src="px-file-upload-custom-tests.js"></script>
+    <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../wct-browser-legacy/browser.js"></script>
+    <script type="module" src="../px-file-upload.js"></script>
+    <script type="module" src="../../px-theme/px-theme-styles.js"></script>
+    <script src="./px-file-upload-custom-tests.js"></script>
   </head>
 
   <body>
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
       <style include="px-theme-styles" is="custom-style"></style>
-    </custom-style>
+    </custom-style>`;
 
-    <test-fixture id="pxFileUpload">
-      <template>
-        <px-file-upload multiple></px-file-upload>
-      </template>
-    </test-fixture>
+document.body.appendChild($_documentContainer.content);
+</script>
 
-    <test-fixture id="pxFileUpload2">
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<test-fixture id="pxFileUpload">
       <template>
-        <px-file-upload multiple message="test message"></px-file-upload>
+        <px-file-upload multiple=""></px-file-upload>
       </template>
-    </test-fixture>
+    </test-fixture>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
+
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<test-fixture id="pxFileUpload2">
+      <template>
+        <px-file-upload multiple="" message="test message"></px-file-upload>
+      </template>
+    </test-fixture>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
   </body>
 </html>
